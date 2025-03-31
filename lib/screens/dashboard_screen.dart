@@ -4,7 +4,7 @@ import '../db_helper.dart';
 class DashboardScreen extends StatefulWidget {
   final int userId;
 
-  DashboardScreen({required this.userId});
+  const DashboardScreen({super.key, required this.userId});
 
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -46,18 +46,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _deleteTransaction(int transactionId) async {
     await dbHelper.deleteTransaction(transactionId);
     loadUserData(); // Refresh the list after deletion
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Transaction deleted')));
-  }
-
-  // Function to edit a transaction
-  void _editTransaction(Map<String, dynamic> transaction) {
-    Navigator.pushNamed(context, '/edit_transaction', arguments: transaction)
-        .then((value) {
-      if (value == true) {
-        loadUserData(); // Refresh the list after editing
-      }
-    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Transaction deleted')),
+    );
   }
 
   // Function to show the add options (income/expense, budget, savings goal)
@@ -73,11 +64,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Text(
                 "Select Action",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
               ),
               ListTile(
-                leading: Icon(Icons.monetization_on),
-                title: Text("Add Income or Expense"),
+                leading: const Icon(Icons.monetization_on, color: Colors.deepPurple),
+                title: const Text("Add Income or Expense"),
                 onTap: () async {
                   Navigator.pop(context);
                   final result = await Navigator.pushNamed(
@@ -89,25 +84,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.pie_chart),
-                title: Text("Add Budget"),
+                leading: const Icon(Icons.pie_chart, color: Colors.deepPurple),
+                title: const Text("Add Budget"),
                 onTap: () async {
                   Navigator.pop(context);
-                  final result = await Navigator.pushNamed(context, '/budget',
-                      arguments: widget.userId);
+                  final result = await Navigator.pushNamed(
+                      context, '/budget', arguments: widget.userId);
                   if (result == true) {
                     loadUserData();
                   }
                 },
               ),
               ListTile(
-                leading: Icon(Icons.savings),
-                title: Text("Add Savings Goal"),
+                leading: const Icon(Icons.savings, color: Colors.deepPurple),
+                title: const Text("Add Savings Goal"),
                 onTap: () async {
                   Navigator.pop(context);
                   final result = await Navigator.pushNamed(
-                      context, '/savings_goal',
-                      arguments: widget.userId);
+                      context, '/savings_goal', arguments: widget.userId);
                   if (result == true) {
                     loadUserData();
                   }
@@ -125,23 +119,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text('Dashboard'),
+        backgroundColor: Colors.deepPurple,
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Dashboard',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () => Navigator.pushNamed(context, '/profile_settings',
+            icon: const Icon(Icons.settings, color: Colors.white),
+            onPressed: () => Navigator.pushNamed(
+                context, '/profile_settings',
                 arguments: widget.userId),
           ),
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
                 context, '/', (route) => false),
           ),
         ],
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : errorMessage.isNotEmpty
               ? Center(child: Text(errorMessage))
               : ListView(
@@ -149,24 +151,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     _buildSectionTitle('Transactions', screenHeight),
                     transactions.isEmpty
-                        ? Center(child: Text('No transactions available.'))
+                        ? const Center(child: Text('No transactions available.'))
                         : _buildTransactionList(transactions, screenHeight),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     _buildSectionTitle('Budgets', screenHeight),
                     budgets.isEmpty
-                        ? Center(child: Text('No budgets available.'))
+                        ? const Center(child: Text('No budgets available.'))
                         : _buildBudgetList(budgets, screenHeight),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     _buildSectionTitle('Savings Goals', screenHeight),
                     savingsGoals.isEmpty
-                        ? Center(child: Text('No savings goals available.'))
+                        ? const Center(child: Text('No savings goals available.'))
                         : _buildSavingsGoalList(savingsGoals, screenHeight),
                   ],
                 ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddOptions, // Show add options when clicked
-        child: Icon(Icons.add),
-        backgroundColor: Colors.blueAccent,
+        onPressed: _showAddOptions,
+        backgroundColor: Colors.deepPurple,
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -179,7 +181,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         style: TextStyle(
           fontSize: screenHeight * 0.03,
           fontWeight: FontWeight.bold,
-          color: Colors.blueAccent,
+          color: Colors.deepPurple,
         ),
       ),
     );
@@ -189,7 +191,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       List<Map<String, dynamic>> transactions, double screenHeight) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: transactions.length,
       itemBuilder: (context, index) {
         final transaction = transactions[index];
@@ -220,25 +222,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.edit, color: Colors.blue),
+                  icon: const Icon(Icons.edit, color: Colors.deepPurple),
                   onPressed: () {
                     Navigator.pushNamed(
                       context,
                       '/edit_transaction',
                       arguments: {
-                        'transaction':
-                            transaction, // Passing the transaction object
-                        'userId': widget.userId, // Passing the user ID
+                        'transaction': transaction,
+                        'userId': widget.userId,
                       },
                     ).then((value) {
                       if (value == true) {
-                        loadUserData(); // Refresh the data after editing
+                        loadUserData();
                       }
                     });
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () => _deleteTransaction(transaction['id']),
                 ),
               ],
@@ -253,7 +254,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       List<Map<String, dynamic>> budgets, double screenHeight) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: budgets.length,
       itemBuilder: (context, index) {
         final budget = budgets[index];
@@ -279,12 +280,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // Savings Goal List with "Contribute" button
   Widget _buildSavingsGoalList(
       List<Map<String, dynamic>> savingsGoals, double screenHeight) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: savingsGoals.length,
       itemBuilder: (context, index) {
         final savings = savingsGoals[index];
@@ -296,23 +296,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           child: ListTile(
             contentPadding: EdgeInsets.all(screenHeight * 0.02),
-            title: Text(savings['goal_name']),
+            title: Text(
+              savings['goal_name'],
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: screenHeight * 0.022),
+            ),
             subtitle: Text(
-              'Goal: \$${savings['goal_amount']} Saved: \$${savings['saved_amount']}',
+              'Goal: \$${savings['goal_amount']}  |  Saved: \$${savings['saved_amount']}',
             ),
             trailing: ElevatedButton(
-              child: Text('Contribute'),
               onPressed: () {
-                // Navigate to ContributeSavingsScreen
                 Navigator.pushNamed(context, '/contribute_savings', arguments: {
                   'userId': widget.userId,
                   'goalName': savings['goal_name'],
                 }).then((result) {
                   if (result == true) {
-                    loadUserData(); // Refresh after contribution
+                    loadUserData();
                   }
                 });
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+              ),
+              child: const Text('Contribute'),
             ),
           ),
         );

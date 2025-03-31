@@ -4,7 +4,7 @@ import '../db_helper.dart';
 class SavingsGoalScreen extends StatefulWidget {
   final int userId;
 
-  SavingsGoalScreen({required this.userId});
+  const SavingsGoalScreen({super.key, required this.userId});
 
   @override
   _SavingsGoalScreenState createState() => _SavingsGoalScreenState();
@@ -21,93 +21,110 @@ class _SavingsGoalScreenState extends State<SavingsGoalScreen> {
     String goalName = goalController.text;
 
     if (goalAmount > 0 && goalName.isNotEmpty) {
-      // Call the db_helper to add the savings goal
       await dbHelper.addSavingsGoal(widget.userId, goalName, goalAmount, 0.0);
 
-      // Show a success message
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Savings goal added successfully')));
+        const SnackBar(content: Text('Savings goal added successfully')),
+      );
 
-      // Return true to indicate data was added and reload the dashboard
       Navigator.pop(context, true);
     } else {
-      // Display an error message if the input is invalid
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please enter a valid goal name and amount')));
+        const SnackBar(content: Text('Please enter a valid goal name and amount')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text("Add Savings Goal"),
+        backgroundColor: Colors.deepPurple,
+        centerTitle: true,
+        title: const Text(
+          "Add Savings Goal",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Set Savings Goal",
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: screenHeight * 0.03,
-                  ),
-            ),
-            SizedBox(height: screenHeight * 0.02),
-
-            // Goal Name Input
-            _buildTextField("Goal Name", goalController, screenHeight),
-
-            SizedBox(height: screenHeight * 0.02),
-
-            // Goal Amount Input
-            _buildTextField("Goal Amount", amountController, screenHeight,
-                keyboardType: TextInputType.number), // Accept only numbers
-
-            SizedBox(height: screenHeight * 0.05),
-
-            // Add Button
-            Center(
-              child: ElevatedButton(
-                onPressed: _addSavingsGoal,
-                child: Text("Add Goal"),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                      vertical: screenHeight * 0.02,
-                      horizontal: screenWidth * 0.3),
-                  textStyle: TextStyle(fontSize: screenHeight * 0.02),
-                  backgroundColor: Colors.blueAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Set Savings Goal",
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: screenHeight * 0.03,
+                            color: Colors.deepPurple,
+                          ),
+                    ),
+                    SizedBox(height: screenHeight * 0.03),
+                    _buildTextField("Goal Name", goalController, screenHeight),
+                    SizedBox(height: screenHeight * 0.02),
+                    _buildTextField(
+                      "Goal Amount",
+                      amountController,
+                      screenHeight,
+                      keyboardType: TextInputType.number,
+                    ),
+                    SizedBox(height: screenHeight * 0.04),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _addSavingsGoal,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          textStyle: TextStyle(fontSize: screenHeight * 0.022),
+                          backgroundColor: Colors.deepPurple,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text("Add Goal"),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  // Build a text field with appropriate keyboard type
-  Widget _buildTextField(
-      String hint, TextEditingController controller, double screenHeight,
+  // Build a text field with consistent styling
+  Widget _buildTextField(String hint, TextEditingController controller, double screenHeight,
       {TextInputType keyboardType = TextInputType.text}) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
-        labelText: hint, // Using label text to make UI more formal
-        border: OutlineInputBorder(
+        labelText: hint,
+        labelStyle: const TextStyle(color: Colors.deepPurple),
+        focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.deepPurple, width: 2.0),
         ),
-        contentPadding: EdgeInsets.symmetric(
-            horizontal: 16.0, vertical: screenHeight * 0.015),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade400, width: 1.5),
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: screenHeight * 0.02),
       ),
     );
   }
